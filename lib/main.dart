@@ -18,30 +18,36 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+/**
+Currency rate to INR: 
+Payment amount (After conversion to INR): X
+Gateway Name fee: Y
+With fee: z
+Money in bank: A
+ */
 
 class Backend {
-  Future<double?> conversion(String currency, int amt, String pmtplat) async {
-    double? rate = await MoneyConverter.convert(
-        Currency(currency), Currency(Currency.INR));
-    //   return convert(rate, amt, pmtplat, currency);
-    // }
+  double processingFee = 0;
+  double charge = 0;
+  double afterConversion = 0;
+  String paymentGateway = 'Paypal';
+  double rate = 0;
+  double moneyReceived = 0;
 
-    // double convert(var rate, var amt, String pmtplat, var curr) {
-    double convertedAmt = rate! * amt;
-    print(convertedAmt);
-    // prcChg(pmtplat, curr, convertedAmt);
-    return convertedAmt;
-    // return prcChg(pmtplat, curr, convertedAmt);
+  Future<void> conversion(String currency, double amt) async {
+    rate = await MoneyConverter.convert(Currency(currency), Currency(Currency.INR)) ?? 0;
+    afterConversion = rate * amt;
+    print(afterConversion);
   }
 
-  int prcChg(String pmtPlatform, String currency, double? finAmt) {
-    var charge;
+  void prcChg(String currency) {
+    var pmtPlatform = paymentGateway;
+    var finAmt = afterConversion;
     if (pmtPlatform == 'Paypal') {
       charge = 0.044;
     } else if (pmtPlatform == 'Stripe' && currency == 'USD') {
       charge = 0.029;
-    } else if (pmtPlatform == 'Stripe' &&
-        (currency == 'EUR' || currency == 'GBP')) {
+    } else if (pmtPlatform == 'Stripe' && (currency == 'EUR' || currency == 'GBP')) {
       charge = 0.034;
     } else if (pmtPlatform == 'Wise (Transferwise)') {
       charge = 0.0004;
@@ -53,15 +59,19 @@ class Backend {
       charge = 0.02;
     }
     print(charge);
-    int fee = charge * finAmt;
-    print(fee);
-    return fee;
+    processingFee = charge * finAmt;
+    print(processingFee);
+    finalAmtReceived();
   }
 
-  double finalAmt(var convertedAmt, var processingFee) {
-    var finAmt = convertedAmt - processingFee;
-    print(finAmt);
-    return finAmt;
+  void finalAmtReceived() {
+    moneyReceived = afterConversion - processingFee;
+  }
+
+  Future<void> update(String currency, double amt) async {
+    await conversion(currency, amt).then((value) {
+      prcChg(currency);
+    });
   }
 }
 
@@ -74,14 +84,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final backend = Backend();
+  var backend = Backend();
+
   double? convertedValue;
   String cvalue = 'USD';
-  String pvalue = 'Paypal';
   var amtController = TextEditingController();
-  String? pmtPlatform;
-  String? currency;
-  int? charge;
 
   late int amt;
 
@@ -91,13 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
     'GBP',
     'SGD',
   ];
-  var paymentProcessors = [
-    'Paypal',
-    'Payoneer',
-    'Stripe',
-    'Wise (Transferwise)',
-    'Direct Bank Transfer'
-  ];
+  var paymentProcessors = ['Paypal', 'Payoneer', 'Stripe', 'Wise (Transferwise)', 'Direct Bank Transfer'];
 
   @override
   Widget build(BuildContext context) {
@@ -114,26 +115,30 @@ class _MyHomePageState extends State<MyHomePage> {
               children: <Widget>[
                 DropdownButton<String>(
                   value: cvalue,
-                  items: currencies
-                      .map((String items) =>
-                          DropdownMenuItem(value: items, child: Text(items)))
-                      .toList(),
+                  items: currencies.map((String items) => DropdownMenuItem(value: items, child: Text(items))).toList(),
                   onChanged: (newValue) {
-                    setState(() {
-                      cvalue = newValue!;
-                    });
+                    cvalue = newValue!;
+                    if (amtController.text.isNotEmpty) {
+                      var amt = double.parse(amtController.text);
+                      backend.update(cvalue, amt).then((value) {
+                        setState(() {});
+                      });
+                    }
                   },
                 ),
                 DropdownButton<String>(
-                  value: pvalue,
+                  value: backend.paymentGateway,
                   items: paymentProcessors
-                      .map((String items) =>
-                          DropdownMenuItem(value: items, child: Text(items)))
+                      .map((String items) => DropdownMenuItem(value: items, child: Text(items)))
                       .toList(),
                   onChanged: (newValue) {
-                    setState(() {
-                      pvalue = newValue!;
-                    });
+                    backend.paymentGateway = newValue!;
+                    if (amtController.text.isNotEmpty) {
+                      var amt = double.parse(amtController.text);
+                      backend.update(cvalue, amt).then((value) {
+                        setState(() {});
+                      });
+                    }
                   },
                 ),
                 Container(
@@ -148,21 +153,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 TextButton(
-                    onPressed: () async {
-                      amt = int.parse(amtController.text);
-                      print(amt);
-                      // pvalue = pmtPlatform;
-                      backend.conversion(cvalue, amt, pvalue).then((value) {
-                        setState(() {
-                          convertedValue = value;
-                          charge = backend.prcChg(pvalue, cvalue, convertedValue);
-                        });
-                      });
-                    },
-                    child: Text('Go')),
-                if (convertedValue != null)
-                  Text('Initial amount: $convertedValue'),
-                Text('Processing charge : $charge'),
+                  onPressed: () {
+                    var amt = double.parse(amtController.text);
+                    print(amt);
+                    backend.update(cvalue, amt).then((value) {
+                      setState(() {});
+                    });
+                  },
+                  child: Text('Go'),
+                ),
+                Text('Initial amount (in INR) : ${backend.afterConversion}'),
+                Text('Processing fee : ${backend.processingFee}'),
+                Text('Final amount : ${backend.moneyReceived}'),
               ],
             )),
       ),
