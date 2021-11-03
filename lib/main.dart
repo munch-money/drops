@@ -18,13 +18,13 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-/**
-Currency rate to INR: 
-Payment amount (After conversion to INR): X
-Gateway Name fee: Y
-With fee: z
-Money in bank: A
- */
+//
+//Currency rate to INR: 
+//Payment amount (After conversion to INR): X
+//Gateway Name fee: Y
+//With fee: z
+// Money in bank: A
+//
 
 class Backend {
   double processingFee = 0;
@@ -55,7 +55,7 @@ class Backend {
       charge = 0.03;
     } else if (pmtPlatform == 'Payoneer') {
       charge = 0.03;
-    } else if (pmtPlatform == 'Direct Bank Deposit') {
+    } else if (pmtPlatform == 'Direct Bank Transfer') {
       charge = 0.02;
     }
     print(charge);
@@ -162,9 +162,20 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                   child: Text('Go'),
                 ),
-                Text('Initial amount (in INR) : ${backend.afterConversion}'),
-                Text('Processing fee : ${backend.processingFee}'),
-                Text('Final amount : ${backend.moneyReceived}'),
+                // Card(
+                //   child:
+                //     Text('Initial amount (in INR) : ${backend.afterConversion}'),
+                //   color: Colors.blue,
+                //     ),
+                Text('Initial amount (in INR) : ${backend.afterConversion.toStringAsFixed(2)}'),
+                SizedBox(
+                  height: 10,
+                ),
+                Text('Processing fee : ${backend.processingFee.toStringAsFixed(2)}'),
+                SizedBox(
+                  height: 10,
+                ),
+                Text('Final amount : ${backend.moneyReceived.toStringAsFixed(2)}'),
               ],
             )),
       ),

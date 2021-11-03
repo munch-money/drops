@@ -94,5 +94,25 @@
       loadMainDartJs();
     }
   </script>
+  <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
+  <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+  <script src="/__/firebase/8.10.0/firebase-app.js"></script>
+
+  <!-- Add Firebase products that you want to use -->
+  <script src="/__/firebase/8.10.0/firebase-auth.js"></script>
+  <script src="/__/firebase/8.10.0/firebase-firestore.js"></script>
+  <script> 
+  const firebaseConfig = {
+    apiKey: "AIzaSyAn-GydY2tW9kq7fL4jOWeJU_ArHR3wwrY",
+    authDomain: "drop001-payment-x-gateway.firebaseapp.com",
+    projectId: "drop001-payment-x-gateway",
+    storageBucket: "drop001-payment-x-gateway.appspot.com",
+    messagingSenderId: "118725784433",
+    appId: "1:118725784433:web:1bf46dac3cb6178539fcd0",
+    measurementId: "G-4V13ZPN5WT"
+  };
+  firebase.initializeApp(firebaseConfig);
+    </script>
+  
 </body>
 </html>
