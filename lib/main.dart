@@ -1,6 +1,9 @@
+import 'package:currency_converter/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
 import 'package:money_converter/money_converter.dart';
 import 'package:money_converter/Currency.dart';
+import 'package:share_everywhere/share_everywhere.dart';
+import 'package:share_plus/share_plus.dart';
 
 void main() {
   runApp(MyApp());
@@ -132,77 +135,118 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Column(
                   // mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('What currency are you getting paid in?'),
-                        DropdownButton<String>(
-                          value: cvalue,
-                          items: currencies
-                              .map((String items) => DropdownMenuItem(
-                                  value: items, child: Text(items)))
-                              .toList(),
-                          onChanged: (newValue) {
-                            setState(() {
-                              cvalue = newValue!;
-                            });
-                            if (amtController.text.isNotEmpty) {
-                              var amt = double.parse(amtController.text);
-                              backend.update(cvalue, amt);
-                            }
-                          },
-                        ),
-                      ],
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
+                      child: Align(
+                          alignment: Alignment.center,
+                          child: Assets.munchLogo.svg()),
                     ),
-                    Text('Which payment provider are you using?'),
-                    DropdownButton<String>(
-                      value: backend.paymentGateway,
-                      items: paymentProcessors
-                          .map((String items) => DropdownMenuItem(
-                              value: items, child: Text(items)))
-                          .toList(),
-                      onChanged: (newValue) {
-                        backend.paymentGateway = newValue!;
-                        if (amtController.text.isNotEmpty) {
-                          var amt = double.parse(amtController.text);
-                          backend.update(cvalue, amt).then((value) {
-                            setState(() {});
-                          });
-                        }
-                      },
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 20.0, left: 8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('What currency are you getting paid in?'),
+                          DropdownButton<String>(
+                            value: cvalue,
+                            items: currencies
+                                .map((String items) => DropdownMenuItem(
+                                    value: items, child: Text(items)))
+                                .toList(),
+                            onChanged: (newValue) {
+                              setState(() {
+                                cvalue = newValue!;
+                              });
+
+                              if (amtController.text.isNotEmpty) {
+                                var amt = double.parse(amtController.text);
+                                backend.update(cvalue, amt);
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                    Text('How much are you making?'),
-                    Container(
-                      constraints: BoxConstraints(minWidth: 280, maxWidth: 480),
-                      child: TextFormField(
-                        keyboardType: TextInputType.number,
-                        controller: amtController,
-                        decoration: const InputDecoration(
-                          labelText: 'Amount',
-                        ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0, bottom: 20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Which payment provider are you using?'),
+                          DropdownButton<String>(
+                            value: backend.paymentGateway,
+                            items: paymentProcessors
+                                .map((String items) => DropdownMenuItem(
+                                    value: items, child: Text(items)))
+                                .toList(),
+                            onChanged: (newValue) {
+                              setState(() {
+                                backend.paymentGateway = newValue!;
+                              });
+                              if (amtController.text.isNotEmpty) {
+                                var amt = double.parse(amtController.text);
+                                backend.update(cvalue, amt);
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0, bottom: 20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('How much are you making?'),
+                          Container(
+                            constraints:
+                                BoxConstraints(minWidth: 280, maxWidth: 480),
+                            child: TextFormField(
+                              keyboardType: TextInputType.number,
+                              controller: amtController,
+                              decoration: const InputDecoration(
+                                labelText: 'Amount',
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     // Row(
                     //   mainAxisAlignment:MainAxisAlignment.center,
                     // children: [
-                    TextButton(
-                      onPressed: () {
-                        var amt = double.parse(amtController.text);
-                        print(amt);
-                        backend.update(cvalue, amt).then((value) {
-                          setState(() {});
-                        });
-                      },
-                      child: Text('Go'),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0, bottom: 20.0),
+                      child: TextButton(
+                        onPressed: () {
+                          var amt = double.parse(amtController.text);
+                          print(amt);
+                          backend.update(cvalue, amt).then((value) {
+                            setState(() {});
+                          });
+                        },
+                        child: Text('Go'),
+                      ),
                     ),
                     // ],
                     // ),
-                   
-                    Container(
-                      child: Text(
-                          'By using ${backend.paymentGateway}, you\'ll be paying ${(backend.charge * 100).toStringAsFixed(2)}%, approx $cvalue ${backend.foreignCharge.toStringAsFixed(2)} as payment fees. \n\nAfter charges, you will receive approx $cvalue ${backend.foreignAfterfee} which translates to INR ${backend.domesticAfterConversion.toStringAsFixed(2)} as per current exchange rates', style: Theme.of(context).textTheme.bodyText1!.copyWith(color: backend.charge != 0 ? Colors.black : Colors.grey),),
+
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0, bottom: 20.0),
+                      child: Container(
+                        child: Text(
+                          'By using ${backend.paymentGateway}, you\'ll be paying ${(backend.charge * 100).toStringAsFixed(2)}%, approx $cvalue ${backend.foreignCharge.toStringAsFixed(2)} as payment fees. \n\nAfter charges, you will receive approx $cvalue ${backend.foreignAfterfee} which translates to INR ${backend.domesticAfterConversion.toStringAsFixed(2)} as per current exchange rates',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText1!
+                              .copyWith(
+                                  color: backend.charge != 0
+                                      ? Colors.black
+                                      : Colors.grey),
+                        ),
+                      ),
                     ),
                     //   Container(
                     //     child:
@@ -220,7 +264,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     // ],
                     SizedBox(
                       height: 80,
-                    )
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Share.share('Share this page https://example.com');
+                      },
+                      child: Text('Share this page'),
+                    ),
+                    ShareButton(shareController, 'https://app.munch.money')
                   ],
                 ),
               ),
@@ -231,3 +282,13 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+ShareController shareController = ShareController(
+    title: "Share on:",
+    elevatedButtonText: Text("Share"),
+    networks: [
+      // SocialConfig(type: "facebook", appId: "your-facebook-app-id"),
+      SocialConfig(type: "linkedin"),
+      SocialConfig(type: "twitter"),
+    ],
+  );
