@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:money_converter/money_converter.dart';
 import 'package:money_converter/Currency.dart';
 import 'package:share_everywhere/share_everywhere.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/link.dart';
+import 'package:flutter/services.dart';
+// import 'package:url_launcher/url_launcher.dart';
+// import 'package:share_plus/share_plus.dart';
 
 void main() {
   runApp(MyApp());
@@ -115,6 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
     'Payoneer',
     'Stripe',
     'Wise (Transferwise)',
+    'Razorpay',
     'Direct Bank Transfer'
   ];
 
@@ -137,18 +141,32 @@ class _MyHomePageState extends State<MyHomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8.0, top: 8.0),
-                      child: Align(
-                          alignment: Alignment.center,
-                          child: Assets.munchLogo.svg()),
+                    Link(
+                      uri: Uri.parse('https://app.munch.money/#/app'),
+                      target: LinkTarget.blank,
+                      builder: (context, followLink) => GestureDetector(
+                        onTap: followLink,
+                        child: MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.only(bottom: 30.0, top: 8.0),
+                            child: Align(
+                                alignment: Alignment.center,
+                                child: Assets.munchLogo.svg()),
+                          ),
+                        ),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20.0, left: 8.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('What currency are you getting paid in?'),
+                          Text(
+                            'Which currency are you getting paid in?',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                           DropdownButton<String>(
                             value: cvalue,
                             items: currencies
@@ -174,7 +192,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Which payment provider are you using?'),
+                          Text(
+                            'Which payment provider are you using?',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                           DropdownButton<String>(
                             value: backend.paymentGateway,
                             items: paymentProcessors
@@ -199,7 +220,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('How much are you making?'),
+                          Text(
+                            'How much are you going to receive?',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                           Container(
                             constraints:
                                 BoxConstraints(minWidth: 280, maxWidth: 480),
@@ -219,7 +243,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     // children: [
                     Padding(
                       padding: const EdgeInsets.only(left: 8.0, bottom: 20.0),
-                      child: TextButton(
+                      child: ElevatedButton(
                         onPressed: () {
                           var amt = double.parse(amtController.text);
                           print(amt);
@@ -227,7 +251,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             setState(() {});
                           });
                         },
-                        child: Text('Go'),
+                        child: Text('Calculate'),
                       ),
                     ),
                     // ],
@@ -236,15 +260,56 @@ class _MyHomePageState extends State<MyHomePage> {
                     Padding(
                       padding: const EdgeInsets.only(left: 8.0, bottom: 20.0),
                       child: Container(
-                        child: Text(
-                          'By using ${backend.paymentGateway}, you\'ll be paying ${(backend.charge * 100).toStringAsFixed(2)}%, approx $cvalue ${backend.foreignCharge.toStringAsFixed(2)} as payment fees. \n\nAfter charges, you will receive approx $cvalue ${backend.foreignAfterfee} which translates to INR ${backend.domesticAfterConversion.toStringAsFixed(2)} as per current exchange rates',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyText1!
-                              .copyWith(
-                                  color: backend.charge != 0
-                                      ? Colors.black
-                                      : Colors.grey),
+                        child: RichText(
+                          text: TextSpan(
+                            text: '${backend.paymentGateway} charges',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyText1!
+                                .copyWith(
+                                    color: backend.charge != 0
+                                        ? Colors.black
+                                        : Colors.grey),
+                            children: <TextSpan>[
+                              // TextSpan(text: '${backend.paymentGateway} charges', style: TextStyle(fontWeight: FontWeight.normal)),
+                              TextSpan(
+                                  text:
+                                      ' ${(backend.charge * 100).toStringAsFixed(2)}%.',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text: ' You will be paying',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.normal)),
+                              TextSpan(
+                                  text:
+                                      ' $cvalue ${backend.foreignCharge.toStringAsFixed(2)}',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text:
+                                      ' as payment fees. \n\nAfter charges, you will receive approx',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.normal)),
+                              TextSpan(
+                                  text: ' $cvalue ${backend.foreignAfterfee}',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text: ' which translates to',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.normal)),
+                              TextSpan(
+                                  text:
+                                      ' INR ${backend.domesticAfterConversion.toStringAsFixed(2)}',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text: '  as per current exchange rates',
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -265,13 +330,54 @@ class _MyHomePageState extends State<MyHomePage> {
                     SizedBox(
                       height: 80,
                     ),
-                    TextButton(
-                      onPressed: () {
-                        Share.share('Share this page https://example.com');
-                      },
-                      child: Text('Share this page'),
+                    // TextButton(
+                    //   onPressed: () {
+                    //     Share.share('Share this page https://example.com');
+                    //   },
+                    //   child: Text('Share this page'),
+                    // ),
+                    Row(
+                      children: [
+                        // Padding(
+                        //   padding: const EdgeInsets.only(left: 8.0),
+                        // child:
+                        ShareButton(shareController, 'https://app.munch.money'),
+                        IconButton(
+                            icon: Icon(Icons.copy),
+                            color: Colors.blue,
+                            onPressed: () {
+                              Clipboard.setData(ClipboardData(
+                                  text:
+                                      "https://drop001-payment-x-gateway.web.app/#/"));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Link Copied')));
+                              // ),
+                            })
+                      ],
+                      mainAxisAlignment: MainAxisAlignment.center,
                     ),
-                    ShareButton(shareController, 'https://app.munch.money')
+                    Padding(
+                      padding: const EdgeInsets.only(top: 50.0, left: 8.0),
+                      child: RichText(
+                        text: TextSpan(
+                          text: 'Disclaimer:',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                              fontStyle: FontStyle.italic),
+                          children: <TextSpan>[
+                            TextSpan(
+                              text:
+                                  ' We don\'t claim these calculations to be exact but only approximations to give a rough estimate on the conservative end. These calculations may significantly vary depending on the bank account and financial platforms being used.',
+                              style: TextStyle(
+                                // fontSize: 10,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
                   ],
                 ),
               ),
@@ -284,11 +390,11 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 ShareController shareController = ShareController(
-    title: "Share on:",
-    elevatedButtonText: Text("Share"),
-    networks: [
-      // SocialConfig(type: "facebook", appId: "your-facebook-app-id"),
-      SocialConfig(type: "linkedin"),
-      SocialConfig(type: "twitter"),
-    ],
-  );
+  title: "Share on:",
+  elevatedButtonText: Text("Share"),
+  networks: [
+    // SocialConfig(type: "facebook", appId: "your-facebook-app-id"),
+    SocialConfig(type: "linkedin"),
+    SocialConfig(type: "twitter"),
+  ],
+);
