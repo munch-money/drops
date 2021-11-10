@@ -1,7 +1,6 @@
 import 'package:currency_converter/gen/assets.gen.dart';
 import 'package:flutter/material.dart';
-import 'package:money_converter/money_converter.dart';
-import 'package:money_converter/Currency.dart';
+import 'viewmodel.dart';
 import 'package:share_everywhere/share_everywhere.dart';
 import 'package:url_launcher/link.dart';
 import 'package:flutter/services.dart';
@@ -41,64 +40,6 @@ class MyApp extends StatelessWidget {
 // Money in bank: A
 //
 
-class Backend {
-  double processingFee = 0;
-  double charge = 0;
-  double foreignCharge = 0;
-  double initialAmt = 0;
-  double domesticAfterConversion = 0;
-  double foreignAfterfee = 0;
-  String paymentGateway = 'Paypal';
-  double rate = 0;
-  double moneyReceived = 0;
-
-  Future<void> conversion(String currency, double amt) async {
-    rate = await MoneyConverter.convert(
-            Currency(currency), Currency(Currency.INR)) ??
-        0;
-    domesticAfterConversion = rate * amt;
-    initialAmt = amt;
-    print(domesticAfterConversion);
-  }
-
-  void prcChg(String currency) {
-    var pmtPlatform = paymentGateway;
-    var finAmt = domesticAfterConversion;
-    if (pmtPlatform == 'Paypal') {
-      charge = 0.044;
-    } else if (pmtPlatform == 'Stripe' && currency == 'USD') {
-      charge = 0.029;
-    } else if (pmtPlatform == 'Stripe' &&
-        (currency == 'EUR' || currency == 'GBP')) {
-      charge = 0.034;
-    } else if (pmtPlatform == 'Wise (Transferwise)') {
-      charge = 0.0004;
-    } else if (pmtPlatform == 'Razorpay') {
-      charge = 0.03;
-    } else if (pmtPlatform == 'Payoneer') {
-      charge = 0.03;
-    } else if (pmtPlatform == 'Direct Bank Transfer') {
-      charge = 0.02;
-    }
-    print(charge);
-    processingFee = charge * finAmt;
-    foreignCharge = initialAmt * charge;
-    foreignAfterfee = initialAmt - foreignCharge;
-    print(processingFee);
-    finalAmtReceived();
-  }
-
-  void finalAmtReceived() {
-    moneyReceived = domesticAfterConversion - processingFee;
-  }
-
-  Future<void> update(String currency, double amt) async {
-    await conversion(currency, amt).then((value) {
-      prcChg(currency);
-    });
-  }
-}
-
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
@@ -135,9 +76,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     print(cvalue);
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(widget.title),
-      // ),
       body: SafeArea(
         child: Center(
           child: Container(
@@ -225,13 +163,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                             value: items, child: Text(items)))
                                         .toList(),
                                     onChanged: (newValue) {
-                                      setState(() {
-                                        backend.paymentGateway = newValue!;
-                                      });
+                                      backend.paymentGateway = newValue!;
+
                                       if (amtController.text.isNotEmpty) {
                                         var amt =
                                             double.parse(amtController.text);
-                                        backend.update(cvalue, amt);
+                                        backend
+                                            .update(cvalue, amt)
+                                            .then((value) => setState(() {}));
                                       }
                                     },
                                   ),
@@ -336,7 +275,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 fontWeight: FontWeight.normal)),
                                         TextSpan(
                                             text:
-                                                ' INR ${backend.domesticAfterConversion.toStringAsFixed(2)}',
+                                                ' INR ${backend.moneyReceived.toStringAsFixed(2)}',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold)),
                                         TextSpan(
@@ -377,8 +316,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 // Padding(
                                 //   padding: const EdgeInsets.only(left: 8.0),
                                 // child:
-                                ShareButton(shareController,
-                                    'https://app.munch.money'),
+                                ShareButton(
+                                    shareController, 'https://app.munch.money'),
                                 IconButton(
                                     icon: Icon(Icons.copy),
                                     color: Colors.blue,
