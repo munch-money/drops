@@ -1,5 +1,6 @@
-import 'package:money_converter/money_converter.dart';
-import 'package:money_converter/Currency.dart';
+import 'converter/money_converter.dart';
+// import 'converter/Controller.dart';
+import 'converter/Currency.dart';
 
 class Backend {
   double processingFee = 0;
@@ -52,8 +53,10 @@ class Backend {
     moneyReceived = domesticAfterConversion - processingFee;
   }
 
-  Future<void> update(String currency, double amt) async {
-    await conversion(currency, amt).then((value) {
+  Future<void> update(String currency, String amt) async {
+    if (amt.isEmpty) return;
+    var amtd = double.parse(amt);
+    await conversion(currency, amtd).then((value) {
       prcChg(currency);
     });
   }

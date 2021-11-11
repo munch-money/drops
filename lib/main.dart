@@ -55,8 +55,6 @@ class _MyHomePageState extends State<MyHomePage> {
   String cvalue = 'USD';
   var amtController = TextEditingController();
 
-  late int amt;
-
   var currencies = [
     'USD',
     'EUR',
@@ -130,15 +128,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                             value: items, child: Text(items)))
                                         .toList(),
                                     onChanged: (newValue) {
-                                      setState(() {
-                                        cvalue = newValue!;
-                                      });
+                                      cvalue = newValue!;
 
-                                      if (amtController.text.isNotEmpty) {
-                                        var amt =
-                                            double.parse(amtController.text);
-                                        backend.update(cvalue, amt);
-                                      }
+                                      backend
+                                          .update(cvalue, amtController.text)
+                                          .then((value) => setState(() {}));
                                     },
                                   ),
                                 ],
@@ -165,13 +159,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                     onChanged: (newValue) {
                                       backend.paymentGateway = newValue!;
 
-                                      if (amtController.text.isNotEmpty) {
-                                        var amt =
-                                            double.parse(amtController.text);
-                                        backend
-                                            .update(cvalue, amt)
-                                            .then((value) => setState(() {}));
-                                      }
+                                      backend
+                                          .update(cvalue, amtController.text)
+                                          .then((value) => setState(() {}));
                                     },
                                   ),
                                 ],
@@ -211,9 +201,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                   left: 8.0, bottom: 20.0),
                               child: ElevatedButton(
                                 onPressed: () {
-                                  var amt = double.parse(amtController.text);
-                                  print(amt);
-                                  backend.update(cvalue, amt).then((value) {
+                                  backend
+                                      .update(cvalue, amtController.text)
+                                      .then((value) {
                                     setState(() {});
                                   });
                                 },
