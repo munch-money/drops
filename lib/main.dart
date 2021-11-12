@@ -1,5 +1,7 @@
 import 'package:currency_converter/gen/assets.gen.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'viewmodel.dart';
 import 'package:share_everywhere/share_everywhere.dart';
 import 'package:url_launcher/link.dart';
@@ -109,6 +111,40 @@ class _MyHomePageState extends State<MyHomePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: 20.0, left: 8.0),
+                              child: RichText(
+                                text: TextSpan(text: 'Hello there 👋',
+                                    // style: DefaultTextStyle.of(context).style,
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text:
+                                            '\n\nWe built this simple tool to help you figure out how much different platforms charge and which one makes sense for you to use. If you found this helpful, please share it with others who might too!',
+                                        // style: textstyle
+                                      ),
+                                      TextSpan(text: '\n\nGive us a holler'),
+                                      TextSpan(
+                                        style: TextStyle(
+                                          color: Colors.blue,
+                                          ),
+                                          text: ' @munchmoneyHQ ',
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () async {
+                                              var url =
+                                                  "https://twitter.com/munchmoneyHQ";
+                                              if (await canLaunch(url)) {
+                                                await launch(url);
+                                              } else {
+                                                throw 'Could not launch $url';
+                                              }
+                                            }),
+                                      TextSpan(
+                                          text:
+                                              'if you liked this, want this to work differently or found a bug, we’d love to hear from you!'),
+                                    ]),
+                              ),
+                            ),
                             Padding(
                               padding: const EdgeInsets.only(
                                   bottom: 20.0, left: 8.0),
