@@ -1,6 +1,6 @@
 {
-    "name": "currency_converter",
-    "short_name": "currency_converter",
+    "name": "conversion_fee",
+    "short_name": "conversion_fee",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
