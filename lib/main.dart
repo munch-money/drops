@@ -1,4 +1,4 @@
-import 'package:currency_converter/gen/assets.gen.dart';
+import '../gen/assets.gen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mixpanel_analytics/mixpanel_analytics.dart';
@@ -31,13 +31,14 @@ class MyApp extends StatelessWidget {
               ),
             ),
           ),
-          primaryTextTheme: TextTheme(
-            bodyText2: TextStyle(),
-            bodyText1: TextStyle(),
-          ).apply(
-            bodyColor: Colors.black,
-            displayColor: Colors.black,
-          )),
+          // primaryTextTheme: TextTheme(
+          //   bodyText2: TextStyle(),
+          //   bodyText1: TextStyle(),
+          // ).apply(
+          //   bodyColor: Colors.black,
+          //   displayColor: Colors.black,
+          // ),
+          ),
       home: MyHomePage(title: 'Conversion fee calculator'),
     );
   }
@@ -130,13 +131,13 @@ class _MyHomePageState extends State<MyHomePage> {
                             Padding(
                               padding: const EdgeInsets.only(
                                   bottom: 20.0, left: 8.0),
-                              child: RichText(
-                                text: TextSpan(
+                              child: Text.rich(
+                                TextSpan(
                                   
                                     text: 'Hello there 👋',
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                    ),
+                                    // style: TextStyle(
+                                    //   color: Colors.black,
+                                    // ),
                                     children: <TextSpan>[
                                       TextSpan(
                                           text:
@@ -303,8 +304,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 padding: const EdgeInsets.only(
                                     left: 8.0, bottom: 20.0),
                                 child: Container(
-                                  child: RichText(
-                                    text: TextSpan(
+                                  child: Text.rich(
+                                    TextSpan(
                                       text: '${backend.paymentGateway} charges',
                                       style: TextStyle(
                                         color: Colors.black,
@@ -407,8 +408,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             Padding(
                               padding:
                                   const EdgeInsets.only(top: 50.0, left: 8.0),
-                              child: RichText(
-                                text: TextSpan(
+                              child: Text.rich(
+                                TextSpan(
                                   text: 'Disclaimer:',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,

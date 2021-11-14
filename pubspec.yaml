@@ -1,5 +1,5 @@
-name: currency_converter
-description: A new Flutter project.
+name: conversion_fee
+description: An easy way to calculate conversion fees when receiving international payments.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
