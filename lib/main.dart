@@ -1,12 +1,14 @@
 import 'package:currency_converter/gen/assets.gen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:mixpanel_analytics/mixpanel_analytics.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'viewmodel.dart';
 import 'package:share_everywhere/share_everywhere.dart';
 import 'package:url_launcher/link.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 // import 'package:url_launcher/url_launcher.dart';
 // import 'package:share_plus/share_plus.dart';
 
@@ -72,6 +74,18 @@ class _MyHomePageState extends State<MyHomePage> {
     'Direct Bank Transfer'
   ];
 
+  MixpanelAnalytics? mixpanel;
+
+  @override
+  void initState() {
+    super.initState();
+    mixpanel = MixpanelAnalytics(
+      token: 'c0496a44c2036f3abada19857d217736',
+      useIp: true,
+    );
+    mixpanel!.track(event: 'views', properties: {});
+  }
+
   @override
   Widget build(BuildContext context) {
     print(cvalue);
@@ -92,7 +106,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       uri: Uri.parse('https://app.munch.money/#/app'),
                       target: LinkTarget.blank,
                       builder: (context, followLink) => GestureDetector(
-                        onTap: followLink,
+                        onTap: () {
+                          followLink!();
+                          mixpanel!.track(event: 'logo_click', properties: {});
+                        },
                         child: MouseRegion(
                           cursor: SystemMouseCursors.click,
                           child: Padding(
@@ -125,12 +142,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ),
                                       TextSpan(text: '\n\nGive us a holler'),
                                       TextSpan(
-                                        style: TextStyle(
-                                          color: Colors.blue,
+                                          style: TextStyle(
+                                            color: Colors.blue,
                                           ),
                                           text: ' @munchmoneyHQ ',
                                           recognizer: TapGestureRecognizer()
                                             ..onTap = () async {
+                                              mixpanel!.track(
+                                                  event: 'twitter_click',
+                                                  properties: {});
                                               var url =
                                                   "https://twitter.com/munchmoneyHQ";
                                               if (await canLaunch(url)) {
@@ -237,6 +257,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   left: 8.0, bottom: 20.0),
                               child: ElevatedButton(
                                 onPressed: () {
+                                  mixpanel!.track(
+                                      event: 'calculate', properties: {});
                                   backend
                                       .update(cvalue, amtController.text)
                                       .then((value) {
@@ -342,20 +364,25 @@ class _MyHomePageState extends State<MyHomePage> {
                                 // Padding(
                                 //   padding: const EdgeInsets.only(left: 8.0),
                                 // child:
-                                ShareButton(
-                                    shareController, 'https://app.munch.money'),
+                                GestureDetector(
+                                  child: ShareButton(shareController,
+                                      'https://conversionfee.com/'),
+                                  onTap: () => mixpanel!
+                                      .track(event: 'Share', properties: {}),
+                                ),
                                 IconButton(
                                     icon: Icon(Icons.copy),
                                     color: Colors.blue,
                                     onPressed: () {
+                                      mixpanel!.track(
+                                          event: 'copy_link', properties: {});
                                       Clipboard.setData(ClipboardData(
-                                          text:
-                                              "https://drop001-payment-x-gateway.web.app/#/"));
+                                          text: "https://conversionfee.com/"));
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(const SnackBar(
                                               content: Text('Link Copied')));
                                       // ),
-                                    })
+                                    }),
                               ],
                               mainAxisAlignment: MainAxisAlignment.center,
                             ),
