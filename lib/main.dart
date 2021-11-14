@@ -20,29 +20,28 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Currency Converter',
+      title: 'Conversion fee calculator',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        textTheme: GoogleFonts.poppinsTextTheme(),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(
-              Color(0xffa960ee),
+          primarySwatch: Colors.blue,
+          textTheme: GoogleFonts.poppinsTextTheme(),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(
+                Color(0xffa960ee),
+              ),
             ),
           ),
-        ),
-      ),
-      home: MyHomePage(title: 'Currency Converter'),
+          primaryTextTheme: TextTheme(
+            bodyText2: TextStyle(),
+            bodyText1: TextStyle(),
+          ).apply(
+            bodyColor: Colors.black,
+            displayColor: Colors.black,
+          )),
+      home: MyHomePage(title: 'Conversion fee calculator'),
     );
   }
 }
-//
-//Currency rate to INR:
-//Payment amount (After conversion to INR): X
-//Gateway Name fee: Y
-//With fee: z
-// Money in bank: A
-//
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -103,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Link(
-                      uri: Uri.parse('https://app.munch.money/#/app'),
+                      uri: Uri.parse('https://app.munch.money/'),
                       target: LinkTarget.blank,
                       builder: (context, followLink) => GestureDetector(
                         onTap: () {
@@ -132,14 +131,37 @@ class _MyHomePageState extends State<MyHomePage> {
                               padding: const EdgeInsets.only(
                                   bottom: 20.0, left: 8.0),
                               child: RichText(
-                                text: TextSpan(text: 'Hello there 👋',
-                                    // style: DefaultTextStyle.of(context).style,
+                                text: TextSpan(
+                                  
+                                    text: 'Hello there 👋',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
                                     children: <TextSpan>[
                                       TextSpan(
-                                        text:
-                                            '\n\nWe built this simple tool to help you figure out how much different platforms charge and which one makes sense for you to use. If you found this helpful, please share it with others who might too!',
-                                        // style: textstyle
-                                      ),
+                                          text:
+                                              '\n\nWe built this simple tool to help you figure out how much different platforms charge and which one makes sense for you to use. We\'ll be refining it further and adding more platforms over time. If you found this helpful, please'
+
+                                          // style: textstyle
+                                          ),
+                                      TextSpan(
+                                          text: ' share ',
+                                          style: TextStyle(
+                                            color: Colors.blue,
+                                          ),
+                                          recognizer: TapGestureRecognizer()
+                                            ..onTap = () {
+                                              Clipboard.setData(ClipboardData(
+                                                  text:
+                                                      "https://conversionfee.com/"));
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(const SnackBar(
+                                                      content:
+                                                          Text('Link Copied')));
+                                            }),
+                                      TextSpan(
+                                          text:
+                                              'it with others who might too!'),
                                       TextSpan(text: '\n\nGive us a holler'),
                                       TextSpan(
                                           style: TextStyle(
@@ -161,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             }),
                                       TextSpan(
                                           text:
-                                              'if you liked this, want this to work differently or found a bug, we’d love to hear from you!'),
+                                              'if you want this to work differently or found a bug, we’d love to hear from you!'),
                                     ]),
                               ),
                             ),
@@ -265,7 +287,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     setState(() {});
                                   });
                                 },
-                                child: Text('Calculate'),
+                                child: Text('How much am I paying?'),
                                 style: ButtonStyle(
                                   backgroundColor:
                                       MaterialStateProperty.all<Color>(
@@ -284,13 +306,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                   child: RichText(
                                     text: TextSpan(
                                       text: '${backend.paymentGateway} charges',
-                                      // style: Theme.of(context)
-                                      //     .textTheme
-                                      //     .bodyText1!
-                                      //     .copyWith(
-                                      //         color: backend.charge != 0
-                                      //             ? Colors.black
-                                      //             : Colors.grey),
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                      ),
                                       children: <TextSpan>[
                                         // TextSpan(text: '${backend.paymentGateway} charges', style: TextStyle(fontWeight: FontWeight.normal)),
                                         TextSpan(
@@ -393,9 +411,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                 text: TextSpan(
                                   text: 'Disclaimer:',
                                   style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                      fontStyle: FontStyle.italic),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                    fontStyle: FontStyle.italic,
+                                    color: Colors.black,
+                                  ),
                                   children: <TextSpan>[
                                     TextSpan(
                                       text:
@@ -426,7 +446,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 ShareController shareController = ShareController(
   title: "Share on:",
-  elevatedButtonText: Text("Share"),
+  elevatedButtonText: Text("Help friends know their fees"),
   networks: [
     // SocialConfig(type: "facebook", appId: "your-facebook-app-id"),
     SocialConfig(type: "linkedin"),
