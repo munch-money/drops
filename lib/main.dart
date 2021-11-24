@@ -141,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     children: <TextSpan>[
                                       TextSpan(
                                           text:
-                                              '\n\nWe built this simple tool to help you figure out how much different platforms charge and which one makes sense for you to use. We\'ll be refining it further and adding more platforms over time. If you found this helpful, please'
+                                              '\n\nWe built this simple tool to help you figure out how much different platforms charge and which one makes sense for you to use. The conversion rates are live with a delay of a few minutes. We\'ll be refining it further and adding more platforms over time. If you found this helpful, please'
 
                                           // style: textstyle
                                           ),
