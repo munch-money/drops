@@ -54,7 +54,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var backend = Backend();
-
+  
   double? convertedValue;
   String cvalue = 'USD';
   var amtController = TextEditingController();
@@ -88,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print(cvalue);
+    // print(cvalue);
     return Scaffold(
       body: SafeArea(
         child: Center(

@@ -1,6 +1,8 @@
-import 'converter/money_converter.dart';
+// import 'converter/money_converter.dart';
 // import 'converter/Controller.dart';
-import 'converter/Currency.dart';
+// import 'converter/Currency.dart';
+import 'package:conversion_fee/exchange_api_class.dart';
+// import 'package:conversion_fee/exchange_api_model.dart';
 
 class Backend {
   double processingFee = 0;
@@ -15,11 +17,11 @@ class Backend {
 
   Future<void> conversion(String currency, double amt) async {
     rate = await MoneyConverter.convert(
-            Currency(currency), Currency(Currency.INR)) ??
+            currency, 'INR') ??
         0;
     domesticAfterConversion = rate * amt;
     initialAmt = amt;
-    print(domesticAfterConversion);
+    // print(domesticAfterConversion);
   }
 
   void prcChg(String currency) {
@@ -41,11 +43,11 @@ class Backend {
     } else if (pmtPlatform == 'Direct Bank Transfer') {
       charge = 0.02;
     }
-    print(charge);
+    // print(charge);
     processingFee = charge * finAmt;
     foreignCharge = initialAmt * charge;
     foreignAfterfee = initialAmt - foreignCharge;
-    print(processingFee);
+    // print(processingFee);
     finalAmtReceived();
   }
 
