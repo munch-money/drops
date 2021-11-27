@@ -6,7 +6,8 @@ import 'package:conversion_fee/exchange_api_class.dart';
 
 class Backend {
   double processingFee = 0;
-  double charge = 0;
+  double percentCharge = 0;
+  double fixedCharge = 0;
   double foreignCharge = 0;
   double initialAmt = 0;
   double domesticAfterConversion = 0;
@@ -16,37 +17,39 @@ class Backend {
   double moneyReceived = 0;
 
   Future<void> conversion(String currency, double amt) async {
-    rate = await MoneyConverter.convert(
-            currency, 'INR') ??
-        0;
+    rate = await MoneyConverter.convert(currency, 'INR') ?? 0;
     domesticAfterConversion = rate * amt;
     initialAmt = amt;
     // print(domesticAfterConversion);
   }
 
   void prcChg(String currency) {
+    // This function holds all charges for different platforms
     var pmtPlatform = paymentGateway;
     var finAmt = domesticAfterConversion;
     if (pmtPlatform == 'Paypal') {
-      charge = 0.044;
+      percentCharge = 0.044;
     } else if (pmtPlatform == 'Stripe' && currency == 'USD') {
-      charge = 0.029;
+      percentCharge = 0.029;
     } else if (pmtPlatform == 'Stripe' &&
         (currency == 'EUR' || currency == 'GBP')) {
-      charge = 0.034;
+      percentCharge = 0.034;
     } else if (pmtPlatform == 'Wise (Transferwise)') {
-      charge = 0.0004;
+      percentCharge = 0.0053;
+      fixedCharge = 4.78;
     } else if (pmtPlatform == 'Razorpay') {
-      charge = 0.03;
+      percentCharge = 0.03;
     } else if (pmtPlatform == 'Payoneer') {
-      charge = 0.03;
+      percentCharge = 0.03;
     } else if (pmtPlatform == 'Direct Bank Transfer') {
-      charge = 0.02;
+      percentCharge = 0.02;
     }
     // print(charge);
-    processingFee = charge * finAmt;
-    foreignCharge = initialAmt * charge;
-    foreignAfterfee = initialAmt - foreignCharge;
+    processingFee = (percentCharge *
+        finAmt) + fixedCharge; // This is the processing fee the user pays in the foreign currency
+    foreignCharge = (initialAmt *
+        percentCharge) + fixedCharge; // This is the initial amount the user would get after converting
+    foreignAfterfee = initialAmt - foreignCharge; // This is the final amount the user gets after conversion and platform fee deductions
     // print(processingFee);
     finalAmtReceived();
   }

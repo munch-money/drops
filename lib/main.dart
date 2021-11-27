@@ -22,23 +22,23 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Conversion fee calculator',
       theme: ThemeData(
-          primarySwatch: Colors.blue,
-          textTheme: GoogleFonts.poppinsTextTheme(),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(
-                Color(0xffa960ee),
-              ),
+        primarySwatch: Colors.blue,
+        textTheme: GoogleFonts.poppinsTextTheme(),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(
+              Color(0xffa960ee),
             ),
           ),
-          // primaryTextTheme: TextTheme(
-          //   bodyText2: TextStyle(),
-          //   bodyText1: TextStyle(),
-          // ).apply(
-          //   bodyColor: Colors.black,
-          //   displayColor: Colors.black,
-          // ),
-          ),
+        ),
+        // primaryTextTheme: TextTheme(
+        //   bodyText2: TextStyle(),
+        //   bodyText1: TextStyle(),
+        // ).apply(
+        //   bodyColor: Colors.black,
+        //   displayColor: Colors.black,
+        // ),
+      ),
       home: MyHomePage(title: 'Conversion fee calculator'),
     );
   }
@@ -54,7 +54,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var backend = Backend();
-  
+
   double? convertedValue;
   String cvalue = 'USD';
   var amtController = TextEditingController();
@@ -132,9 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               padding: const EdgeInsets.only(
                                   bottom: 20.0, left: 8.0),
                               child: Text.rich(
-                                TextSpan(
-                                  
-                                    text: 'Hello there 👋',
+                                TextSpan(text: 'Hello there 👋',
                                     // style: TextStyle(
                                     //   color: Colors.black,
                                     // ),
@@ -299,7 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             // ],
                             // ),
-                            if (backend.charge != 0)
+                            if (backend.percentCharge != 0)
                               Padding(
                                 padding: const EdgeInsets.only(
                                     left: 8.0, bottom: 20.0),
@@ -314,9 +312,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                         // TextSpan(text: '${backend.paymentGateway} charges', style: TextStyle(fontWeight: FontWeight.normal)),
                                         TextSpan(
                                             text:
-                                                ' ${(backend.charge * 100).toStringAsFixed(2)}%.',
+                                                ' ${(backend.percentCharge * 100).toStringAsFixed(2)}% ',
                                             style: TextStyle(
                                                 fontWeight: FontWeight.bold)),
+                                        if (backend.fixedCharge != 0)
+                                          TextSpan(
+                                              text:
+                                                  'and a fixed fee of $cvalue ${backend.fixedCharge}.'),
                                         TextSpan(
                                             text: ' You will be paying',
                                             style: TextStyle(
